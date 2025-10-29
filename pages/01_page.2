@@ -1,5 +1,8 @@
-def page(2):
-    st.header('좋아하는 사람이 없으신 분들의 페이지')
-    st.image('https://blog.kakaocdn.net/dna/GHQUw/btr35vWC5ng/AAAAAAAAAAAAAAAAAAAAAFWKhDDyeFtlcOIFvUAEwRezSUEhs-5eoOymt5CbnATF/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&amp;expires=1761922799&amp;allow_ip=&amp;allow_referer=&amp;signature=rey%2Bqe%2FNNc3AlVaQte7nh%2F52Ekc%3D')
-    iris2 = 당신의 앞날에 희망이 있기를 바랄게요!
-    st.write(iris2)
+import random # import 함수꾸러미이름
+print(random.choice(['찍먹','부먹'])) # a.b
+
+import random as rd # import 함수꾸러미이름 as 별명
+print(rd.choice(['찍먹','부먹']))
+
+from random import choice # from 함수꾸러미이름 import 함수이름
+print(choice(['찍먹','부먹']))
