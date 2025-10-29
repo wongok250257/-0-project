@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 def main_page():
     st.header('좋아하는 사람이 있으신 분들의 페이지')
