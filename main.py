@@ -7,15 +7,14 @@ import pandas as pd
 def main_page():
     st.header('좋아하는 사람이 있으신 분들의 페이지')
     st.image('https://i.namu.wiki/i/DiYExkj1wNJiwl8yxJ_35zdhCk_Zks9GtCa8zqErfpH703Sv7DCcJeeLBBMxLC-eofYKMz3e8w2nHa5uY4bZ4V5nWh74TXtbYnzyHQ5WP2iXQBgTsscz9fxdPeV3jIMlLIz-Q_rsR0wLT8WIHg6t1Q.webp')
-    iris = pd.read_csv('좋아하는 사람이 있으신 당신을 제가 도와드릴게요!')
+    iris = pd.read_csv(countriesMBTI_16types.csv)
     st.write(iris)
     
 # 2페이지: 세 개의 columns으로 나누어 꽃 이름과 사진 나타내기
 def page2():
     st.header('좋아하는 사람이 없으신 분들의 페이지')
     st.image('https://hips.hearstapps.com/hmg-prod/images/eden-brothers-mammoth-sunflower-689b5a3d746ce.jpg?crop=1xw:1xh;center,top&resize=980:*')
-    iris2 = pd.read_csv('당신의 앞날에 희망이 있기를 바랄게요!')
-    st.write(iris2)
+    
 
 
 # 3페이지: 세 개의 tab을 사용하여 iris 3가지 꽃 나타내기 (width=500)
