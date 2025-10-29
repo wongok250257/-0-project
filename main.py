@@ -1,44 +1,69 @@
+import koreanize_matplotlib
+
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
-# 메인페이지 
-# Iris 사진 경로 - https://images.pexels.com/photos/5677011/pexels-photo-5677011.jpeg?auto=compress&cs=tinysrgb&w=200
-# https://raw.githubusercontent.com/huhshin/streamlit/master/data_iris.csv 읽고 나타내기 
-def main_page():
-    st.header('좋아하는 사람이 있으신 분들의 페이지')
-    st.image('https://i.namu.wiki/i/DiYExkj1wNJiwl8yxJ_35zdhCk_Zks9GtCa8zqErfpH703Sv7DCcJeeLBBMxLC-eofYKMz3e8w2nHa5uY4bZ4V5nWh74TXtbYnzyHQ5WP2iXQBgTsscz9fxdPeV3jIMlLIz-Q_rsR0wLT8WIHg6t1Q.webp')
-    iris = pd.read_csv(countriesMBTI_16types.csv)
-    st.write(iris)
-    
-# 2페이지: 세 개의 columns으로 나누어 꽃 이름과 사진 나타내기
-def page2():
-    st.header('좋아하는 사람이 없으신 분들의 페이지')
-    st.image('https://hips.hearstapps.com/hmg-prod/images/eden-brothers-mammoth-sunflower-689b5a3d746ce.jpg?crop=1xw:1xh;center,top&resize=980:*')
-    
+# 데이터 로드
+df = pd.read_csv("countriesMBTI_16types.csv")
 
+# 퍼센트 변환 (소수점 둘째 자리까지)
+for col in df.columns[1:]:
+    df[col] = (df[col] * 100).round(2)
 
-# 3페이지: 세 개의 tab을 사용하여 iris 3가지 꽃 나타내기 (width=500)
-def page3():
-    st.header('Page 3')
-    tab1, tab2, tab3 = st.tabs(['Setosa', 'Versicolor', 'Virginica'])
-    with tab1:
-        st.text('Setosa')
-        st.image('https://m.media-amazon.com/images/I/61pLvdbjC7L._AC_.jpg')
-    with tab2:
-        st.text('Versicolor')
-        st.image('https://upload.wikimedia.org/wikipedia/commons/2/27/Blue_Flag%2C_Ottawa.jpg')
-    with tab3:
-        st.text('Virginica')
-        st.image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Iris_virginica_2.jpg/1920px-Iris_virginica_2.jpg')
+# 앱 제목 (이모지 활용)
+st.header("🧑🏻‍💻조원고 김수진 선생님과 함께하는! 👩🏻‍💻")
+st.title("🌍 국가별 MBTI 성향 분석 프로젝트 🔍")
+# 데이터 출처 표기
+st.markdown(
+    "📊 **데이터 출처**: [Kaggle - MBTI Types by Country](https://www.kaggle.com/datasets/yamaerenay/mbtitypes-full/data)",
+    help="MBTI 유형의 국가별 분포 데이터를 Kaggle에서 가져왔습니다."
+)
+# 국가 선택
+global_mbti_types = sorted(set(df.columns) - {"Country"})
+country = st.selectbox("🌏 국가를 선택하세요:", df["Country"].unique())
 
+# 선택한 국가의 MBTI 분포 시각화 (내림차순 정렬 및 예쁜 색상 적용)
+st.subheader(f"📊 {country}의 MBTI 분포")
+selected_data = df[df["Country"] == country].iloc[:, 1:].T
+selected_data.columns = [country]
+selected_data = selected_data.sort_values(by=country, ascending=False)
+fig = px.bar(selected_data, x=selected_data.index, y=country, text=selected_data[country],
+             title=f"{country}의 MBTI 분포", labels={country: "비율 (%)"},
+             hover_data={country: ':,.2f'}, color=selected_data.index, 
+             color_discrete_sequence=px.colors.qualitative.Pastel)
+st.plotly_chart(fig)
+
+# 전체 데이터 평균 분석 (내림차순 정렬 및 예쁜 색상 적용)
+st.subheader("📊 전체 국가의 MBTI 평균 비율")
+mbti_avg = df.iloc[:, 1:].mean().sort_values(ascending=False)
+mbti_avg_df = pd.DataFrame({"MBTI": mbti_avg.index, "비율 (%)": mbti_avg.values})
+fig_avg = px.bar(mbti_avg_df, x="MBTI", y="비율 (%)", text="비율 (%)",
+                 title="전체 국가별 MBTI 평균", labels={"비율 (%)": "평균 비율 (%)"},
+                 hover_data={"비율 (%)": ':,.2f'}, color="MBTI",
+                 color_discrete_sequence=px.colors.qualitative.Pastel)
+st.plotly_chart(fig_avg)
+
+# MBTI 유형별 상위 10개국 & 한국 시각화
+target_mbti = st.selectbox("💡 MBTI 유형을 선택하세요:", global_mbti_types)
+st.subheader(f"🏆 {target_mbti} 비율이 높은 국가 TOP 10 & 한국")
+
+if target_mbti in df.columns:
+    try:
+        top_10 = df.nlargest(10, target_mbti)[["Country", target_mbti]].copy()
+        korea_value = df[df["Country"] == "South Korea"][target_mbti].values[0] if "South Korea" in df["Country"].values else None
         
-# 딕셔너리 선언 {  ‘selectbox항목’ : 페이지명 …  }
-page_names_to_funcs = {'Main Page':main_page, 'Page2':page2, 'Page3':page3}
+        if korea_value is not None:
+            korea_data = pd.DataFrame({"Country": ["South Korea"], target_mbti: [korea_value]})
+            top_10 = pd.concat([top_10, korea_data])
 
-# 사이드 바에서 selectbox 선언 & 선택 결과 저장
-selected_page = st.sidebar.selectbox('Select a Page.', page_names_to_funcs.keys())
-
-# 해당 페이지 부르기
-page_names_to_funcs[selected_page]()
-
-# 파일실행: File > New > Terminal(anaconda prompt) - streamlit run streamlit\5-3.layouts.py
+        top_10 = top_10.sort_values(by=target_mbti, ascending=False)
+        fig_top = px.bar(top_10, x="Country", y=target_mbti, text=target_mbti, color="Country",
+                         color_discrete_map={"South Korea": "red"}, title=f"{target_mbti} 비율 TOP 10 & 한국",
+                         labels={target_mbti: "비율 (%)"}, hover_data={target_mbti: ':,.2f'},
+                         color_discrete_sequence=px.colors.qualitative.Pastel)
+        st.plotly_chart(fig_top)
+    except Exception as e:
+        st.error(f"데이터를 불러오는 중 오류 발생: {e}")
+else:
+    st.error("선택한 MBTI 유형이 데이터에 존재하지 않습니다.")
