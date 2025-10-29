@@ -11,7 +11,7 @@ def main_page():
     st.write(a)
     
 # 2페이지: 세 개의 columns으로 나누어 꽃 이름과 사진 나타내기
-def page(2):
+def page2():
     st.header('좋아하는 사람이 없으신 분들의 페이지')
     st.image('https://blog.kakaocdn.net/dna/GHQUw/btr35vWC5ng/AAAAAAAAAAAAAAAAAAAAAFWKhDDyeFtlcOIFvUAEwRezSUEhs-5eoOymt5CbnATF/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&amp;expires=1761922799&amp;allow_ip=&amp;allow_referer=&amp;signature=rey%2Bqe%2FNNc3AlVaQte7nh%2F52Ekc%3D')
     iris2 = pd.read_csv('당신의 앞날에 희망이 있기를 바랄게요!')
